@@ -52,6 +52,26 @@ docker compose down -v
 SECRET_KEY=k DEBUG=True DJANGO_SETTINGS_MODULE=config.test_settings .venv/bin/python manage.py test interface.api.books -v 2
 ```
 
+### Seed the Database
+
+To populate the database with realistic sample books using the seeding script:
+
+**Inside the application container:**
+```bash
+docker compose exec app python scripts/seed_books.py --count 100
+```
+
+**Against the running HTTP API from the host:**
+```bash
+python scripts/seed_books.py --mode api --count 40 --base-url http://localhost/api
+```
+
+Available optional arguments:
+- `--count N`: Number of books to generate (default: 60)
+- `--seed N`: Random seed for reproducibility
+- `--mode MODE`: Insertion method (`db` for direct Django ORM or `api` for HTTP POST requests)
+- `--base-url URL`: API base URL when using `--mode api` (default: `http://localhost/api`)
+
 ## .env Explanations
 
 | Variable | Description | Example |
