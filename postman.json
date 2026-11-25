@@ -1,0 +1,193 @@
+{
+  "info": {
+    "name": "Bookstore Inventory API",
+    "description": "CRUD, search, low-stock, and price calculation for a book retail chain inventory API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_variable_scope": "variables",
+    "variable": [
+      { "key": "baseUrl", "value": "http://localhost", "type": "string" },
+      { "key": "bookId", "value": "1", "type": "string" },
+      { "key": "category", "value": "Literatura", "type": "string" },
+      { "key": "threshold", "value": "10", "type": "string" }
+    ]
+  },
+  "item": [
+    {
+      "name": "CRUD",
+      "item": [
+        {
+          "name": "Create Book",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"El Quijote\",\n  \"author\": \"Miguel de Cervantes\",\n  \"isbn\": \"978-84-376-0494-7\",\n  \"cost_usd\": 15.99,\n  \"stock_quantity\": 25,\n  \"category\": \"Literatura Clásica\",\n  \"supplier_country\": \"ES\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/books/", "host": ["{{baseUrl}}"], "path": ["books", ""] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"Response has id\", function () { pm.expect(pm.response.json().id).to.not.be.undefined; });",
+                  "pm.collectionVariables.set(\"bookId\", pm.response.json().id)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Books",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/books/", "host": ["{{baseUrl}}"], "path": ["books", ""] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is paginated\", function () { pm.expect(pm.response.json()).to.have.property('count'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Book by ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/books/{{bookId}}/", "host": ["{{baseUrl}}"], "path": ["books", "{{bookId}}", ""] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Book",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"El Quijote (edited)\",\n  \"stock_quantity\": 30\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/books/{{bookId}}/", "host": ["{{baseUrl}}"], "path": ["books", "{{bookId}}", ""] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Book",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/books/{{bookId}}/", "host": ["{{baseUrl}}"], "path": ["books", "{{bookId}}", ""] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Search & Filters",
+      "item": [
+        {
+          "name": "Search by Category",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/books/search?category={{category}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["books", "search"],
+              "query": [{ "key": "category", "value": "{{category}}" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Low Stock",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/books/low-stock?threshold={{threshold}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["books", "low-stock"],
+              "query": [{ "key": "threshold", "value": "{{threshold}}" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Price Calculation",
+      "item": [
+        {
+          "name": "Calculate Selling Price",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/books/{{bookId}}/calculate-price/", "host": ["{{baseUrl}}"], "path": ["books", "{{bookId}}", "calculate-price", ""] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response has selling_price_local\", function () { pm.expect(pm.response.json()).to.have.property('selling_price_local'); });",
+                  "pm.test(\"Currency is VES\", function () { pm.expect(pm.response.json().currency).to.equal('VES'); });",
+                  "pm.test(\"Margin is 40\", function () { pm.expect(pm.response.json().margin_percentage).to.equal(40); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
