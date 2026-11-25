@@ -11,10 +11,11 @@ RUN pip install --no-cache-dir \
     django==5.2.13 \
     psycopg2-binary \
     requests \
-    djangorestframework
+    djangorestframework \
+    gunicorn
 
 COPY . /app
 
 EXPOSE 8000
 
-CMD python manage.py migrate && python manage.py runserver 0.0.0.0:8000
+CMD python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120

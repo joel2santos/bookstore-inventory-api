@@ -1,19 +1,26 @@
 services:
+  traefik:
+    image: traefik:v2.11
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --entrypoints.web.address=:80
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
   db:
     image: postgres:15-alpine
     environment:
       POSTGRES_DB: bookstore_inventory
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
   app:
     build: .
-    ports:
-      - "8000:8000"
     env_file:
       - .env
     depends_on:
@@ -23,6 +30,12 @@ services:
       DB_NAME: ${DB_NAME:-bookstore_inventory}
       DB_USER: ${DB_USER:-postgres}
       DB_PASSWORD: ${DB_PASSWORD:-postgres}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.rule=HostRegexp(`{host:.+}`)" # this is temporal bc we don't have a hostname heh
+      - "traefik.http.routers.app.entrypoints=web"
+      - "traefik.http.routers.app.service=app"
+      - "traefik.http.services.app.loadbalancer.server.port=8000"
 
 volumes:
   postgres_data:
