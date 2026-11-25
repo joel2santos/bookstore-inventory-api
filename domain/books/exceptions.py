@@ -1,6 +1,3 @@
-"""Domain exceptions for the books bounded context."""
-
-
 class BookNotFound(Exception):
     """Raised when a requested book does not exist."""
 

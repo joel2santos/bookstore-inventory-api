@@ -1,8 +1,3 @@
-"""Domain entities for the books bounded context.
-
-Plain Python objects with no framework dependencies.
-"""
-
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal

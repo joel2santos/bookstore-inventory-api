@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from decimal import Decimal
 from typing import Optional
@@ -56,7 +58,8 @@ class AbstractExchangeRateGateway(ABC):
 
     @abstractmethod
     def fetch_rate(self, base_currency: str, target_currency: str) -> Decimal:
-        """Return the exchange rate from base_currency to target_currency.
+        """
+        Return the exchange rate from base_currency to target_currency.
 
         Raises:
             ExchangeRateUnavailable: if the rate cannot be obtained.

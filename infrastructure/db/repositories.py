@@ -1,4 +1,4 @@
-"""Django implementation of the Book repository contract."""
+from __future__ import annotations
 
 from decimal import Decimal
 from typing import Optional
@@ -26,11 +26,11 @@ class DjangoBookRepository(AbstractBookRepository):
         return [self._to_entity(row) for row in queryset]
 
     def search_by_category(self, category: str) -> list[Book]:
-        rows = DjangoBook.objects.filter(category=category)
+        rows = DjangoBook.objects.filter(category__icontains=category)
         return [self._to_entity(row) for row in rows]
 
     def low_stock(self, threshold: int) -> list[Book]:
-        rows = DjangoBook.objects.filter(stock_quantity__lt=threshold)
+        rows = DjangoBook.objects.filter(stock_quantity__lte=threshold)
         return [self._to_entity(row) for row in rows]
 
     def create(self, entity: Book) -> Book:
